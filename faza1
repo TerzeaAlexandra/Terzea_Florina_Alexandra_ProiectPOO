@@ -1,0 +1,189 @@
+#include <iostream>
+#include<string>
+using namespace std;
+
+
+//domeniul este transport feroviar
+
+class Pasager {
+public:
+	string nume;
+	int varsta;
+	const int id;
+	static int nrPasageri;
+	int* bilete;
+
+	Pasager() : id(0) {
+		this->nume = "NoName";
+		this->varsta = 0;
+		this->bilete = NULL;
+		nrPasageri++;
+	}
+
+	Pasager(string nume, int varsta) : id(3) {
+		this->nume = nume;
+		this->varsta = varsta;
+		this->bilete = NULL;
+		nrPasageri++;
+
+	}
+
+	Pasager(string nume, int varsta, int* bilete, int size) : id(5) {
+		this->nume = nume;
+		this->varsta = varsta;
+		this->bilete = new int[size];
+		for (int i = 0; i < size; i++) {
+			this->bilete[i] = bilete[i];
+		}
+		nrPasageri++;
+	}
+
+	~Pasager() {
+		delete[] bilete;
+		nrPasageri--;
+	}
+	void afisare() {
+		cout << " Pasagerul cu numele " << nume << " are varsta de "<<varsta<< " ani."<< endl;
+
+	}
+
+
+};
+
+int Pasager::nrPasageri = 0;
+
+
+class Bilet {
+public:
+	string destinatie;
+	float pret;
+	const int id;
+	static string companie;
+	bool* utilizat;
+
+
+
+	Bilet() :id(0) {
+		this->destinatie = "numeDestinatie";
+		this->pret = 0.0;
+		this->utilizat = NULL;
+	}
+
+	Bilet(string destinatie, float pret) : id(1) {
+		this->destinatie = destinatie;
+		this->pret = pret;
+		this->utilizat = NULL;
+
+	}
+
+	Bilet(string destinatie, float pret, bool* utilizat, int size) : id(2) {
+		this->destinatie = destinatie;
+		this->pret = pret;
+		this->utilizat = new bool[size];
+		for (int i = 0; i < size; i++) {
+			this->utilizat[i] = utilizat[i];
+		}
+	}
+
+
+	~Bilet() {
+		delete[] utilizat;
+	}
+
+
+	void afisareDestinatie() {
+		cout << "Urmatorul tren are destinatia " << destinatie << ", pretul unui bilet fiind de "<< pret<< " lei."<<endl;
+
+	}
+};
+
+string Bilet::companie = "";
+
+
+class Tren {
+public:
+	string nume;
+	int nrVagoane;
+	static string companie;
+	const int idTren;
+	int* capacitate;
+
+
+	Tren() : idTren(1) {
+		this->nume = "FaraNume";
+		this->nrVagoane = 0;
+		this->capacitate = NULL;
+	}
+
+	Tren(string nume, int nrVagoane) : idTren(2) {
+		this->nume = nume;
+		this->nrVagoane = nrVagoane;
+		this->capacitate = NULL;
+
+
+	}
+
+	Tren(string nume, int nrVagoane, int* capacitate, int size) : idTren(3) {
+		this->nume = nume;
+		this->nrVagoane = nrVagoane;
+		this->capacitate = new int[size];
+		for (int i = 0; i < size; i++) {
+			this->capacitate[i] = capacitate[i];
+
+		}
+	}
+
+	~Tren() {
+		delete[] capacitate;
+	}
+
+	void afisare() {
+		cout << "Trenul cu numele " <<this->nume << " ,are un numar de " <<this->nrVagoane << " vagoane. "<<endl;
+
+	}
+};
+
+string Tren::companie = "";
+
+
+void main()
+{
+	int bilete1[2] = { 1,2 };
+	Pasager pasager1;
+	Pasager pasager2("Popescu Ion", 35);
+	Pasager pasager3("Teodorescu Vasile", 27, bilete1, 2);
+
+	pasager1.afisare();
+	cout << endl;
+	pasager2.afisare();
+	cout << endl;
+	pasager3.afisare();
+	cout << endl;
+
+	bool utilizat1[3] = { true,false,true };
+	Bilet bilet1;
+	Bilet bilet2("Bucuresti", 25.5);
+	Bilet bilet3("Craiova", 26, utilizat1, 3);
+
+	bilet1.afisareDestinatie();
+	cout << endl;
+	bilet2.afisareDestinatie();
+	cout << endl;
+	bilet3.afisareDestinatie();
+	cout << endl;
+
+
+	int capacitate1[3] = { 90,140,190 };
+	Tren tren1;
+	Tren tren2("IR", 4);
+	Tren tren3("R", 5, capacitate1, 3);
+
+	tren1.afisare();
+	cout << endl;
+	tren2.afisare();
+	cout << endl;
+	tren3.afisare();
+	cout << endl;
+
+
+}
