@@ -6,12 +6,14 @@ using namespace std;
 //domeniul este transport feroviar
 
 class Pasager {
-public:
+private:
 	string nume;
 	int varsta;
 	const int id;
 	static int nrPasageri;
 	int* bilete;
+
+public:
 
 	Pasager() : id(0) {
 		this->nume = "NoName";
@@ -38,10 +40,51 @@ public:
 		nrPasageri++;
 	}
 
+	Pasager(const Pasager& pasager) : id(pasager.id) {
+		this->nume = pasager.nume;
+		this->varsta = pasager.varsta;
+		if (pasager.bilete != NULL) {
+			this->bilete = new int[2];
+			for (int i = 0; i < 2; i++) {
+				this->bilete[i] = pasager.bilete[i];
+			}
+		}
+		else {
+			this->bilete = NULL;
+		}
+		nrPasageri++;
+	}
+
 	~Pasager() {
 		delete[] bilete;
 		nrPasageri--;
 	}
+
+	string getNume() const {
+		return this->nume;
+	}
+
+	void setNume(string& nume) {
+		this->nume = nume;
+	}
+
+	int getVarsta() const{
+		return this->varsta;
+	}
+
+	void setVarsta(int varsta) {
+		this->varsta = varsta;
+	}
+
+	int getId() const {
+		return this->id;
+	}
+
+	static int getNrPasageri() {
+		return nrPasageri;
+	}
+
+
 	void afisare() {
 		cout << " Pasagerul cu numele " << nume << " are varsta de "<<varsta<< " ani."<< endl;
 
@@ -54,15 +97,14 @@ int Pasager::nrPasageri = 0;
 
 
 class Bilet {
-public:
+private:
 	string destinatie;
 	float pret;
 	const int id;
 	static string companie;
 	bool* utilizat;
 
-
-
+public:
 	Bilet() :id(0) {
 		this->destinatie = "numeDestinatie";
 		this->pret = 0.0;
@@ -85,13 +127,52 @@ public:
 		}
 	}
 
+	Bilet(Bilet& bilet) : id(bilet.id) {
+		this->destinatie = bilet.destinatie;
+		this->pret = bilet.pret;
+		if (bilet.utilizat != NULL) {
+			this->utilizat = new bool[3];
+			for (int i = 0; i < 3; i++) {
+				this->utilizat[i] = bilet.utilizat[i];
+			}
+		}
+		else {
+			this->utilizat = NULL;
+		}
+	}
+
+	string getDestinatie() const {
+		return this->destinatie;
+	}
+
+	void setDestinatie(string& destinatie) {
+		this->destinatie = destinatie;
+	}
+
+	float getPret() const{
+		return pret;
+	}
+
+	void setPret(float pret) {
+		if (pret >= 0) {
+			this->pret = pret;
+		}
+	}
+
+	int getId() const {
+		return id;
+	}
+
+	static string getCompanie() {
+		return companie;
+	}
 
 	~Bilet() {
 		delete[] utilizat;
 	}
 
 
-	void afisareDestinatie() {
+	void afisareDestinatie() const {
 		cout << "Urmatorul tren are destinatia " << destinatie << ", pretul unui bilet fiind de "<< pret<< " lei."<<endl;
 
 	}
@@ -101,14 +182,14 @@ string Bilet::companie = "";
 
 
 class Tren {
-public:
+private:
 	string nume;
 	int nrVagoane;
 	static string companie;
 	const int idTren;
 	int* capacitate;
 
-
+public:
 	Tren() : idTren(1) {
 		this->nume = "FaraNume";
 		this->nrVagoane = 0;
@@ -132,9 +213,47 @@ public:
 
 		}
 	}
+	
+	Tren(const Tren& tren) : idTren(tren.idTren) {
+		this->nume = tren.nume;
+		this->nrVagoane = tren.nrVagoane;
+		if (tren.capacitate != NULL) {
+			this->capacitate = new int[3];
+			for (int i = 0; i < 3; i++) {
+				this->capacitate[i] = tren.capacitate[i];
+			}
+		}
+		else {
+			this->capacitate = NULL;
+		}
+	}
 
 	~Tren() {
 		delete[] capacitate;
+	}
+
+	string getNume() const{
+		return nume;
+	}
+
+	void setNume(const string& nume) {
+		this->nume = nume;
+	}
+
+	int getNrVagoane() const {
+		return nrVagoane;
+	}
+
+	void setNrVagoane(int nrVagoane) {
+		this->nrVagoane = nrVagoane;
+	}
+
+	int getIdTren() {
+		return idTren;
+	}
+
+	static string getCompanie() {
+		return companie;
 	}
 
 	void afisare() {
@@ -145,8 +264,19 @@ public:
 
 string Tren::companie = "";
 
+void detaliiPasager(const Pasager& pasager) {
+	cout << "Detalii pasager: " << endl;
+	cout << "Nume: " << pasager.getNume() << endl;
+	cout << "varsta: " << pasager.getVarsta() << endl;
+}
 
-void main()
+void detaliiBilet(const Bilet& bilet) {
+	cout << "detalii bilet: " << endl;
+	cout << "Destinatie: " << bilet.getDestinatie() << endl;
+	cout << "pret: " << bilet.getPret() << endl;
+}
+
+int main()
 {
 	int bilete1[2] = { 1,2 };
 	Pasager pasager1;
@@ -184,6 +314,8 @@ void main()
 	cout << endl;
 	tren3.afisare();
 	cout << endl;
-
+	
+	detaliiPasager(pasager2);
+	detaliiBilet(bilet2);
 
 }
