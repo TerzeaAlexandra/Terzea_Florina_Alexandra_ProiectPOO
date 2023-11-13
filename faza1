@@ -90,6 +90,44 @@ public:
 
 	}
 
+	Pasager& operator=(const Pasager& pasager) {
+		if (this != &pasager) {
+			this->nume = pasager.nume;
+			this->varsta = pasager.varsta;
+			delete[] this->bilete;
+			if (pasager.bilete != NULL) {
+				this->bilete = new int[2];
+				for (int i = 0; i < 2; i++) {
+					this->bilete[i] = pasager.bilete[i];
+				}
+			}
+			else {
+				this->bilete = NULL;
+			}
+		}
+		return *this;
+	}
+
+	bool operator==(const Pasager& pasager)  {
+		return this->nume == pasager.nume && this->varsta == pasager.varsta;
+	}
+
+	Pasager operator+(const Pasager& pasager)  {
+		Pasager aux;
+		aux.nume = this->nume;
+		aux.varsta += pasager.varsta;
+		return aux;
+	}
+
+	int operator[](int index) {
+		if (index >= 0 && index < 2) {
+			return this->bilete[index];
+		}
+		else {
+			throw 404;
+		}
+	}
+
 
 };
 
@@ -127,7 +165,7 @@ public:
 		}
 	}
 
-	Bilet(Bilet& bilet) : id(bilet.id) {
+	Bilet(const Bilet& bilet) : id(bilet.id) {
 		this->destinatie = bilet.destinatie;
 		this->pret = bilet.pret;
 		if (bilet.utilizat != NULL) {
@@ -175,6 +213,40 @@ public:
 	void afisareDestinatie() const {
 		cout << "Urmatorul tren are destinatia " << destinatie << ", pretul unui bilet fiind de "<< pret<< " lei."<<endl;
 
+	}
+
+	Bilet& operator=(const Bilet& bilet) {
+		if (this != &bilet) {
+			this->destinatie = bilet.destinatie;
+			this->pret = bilet.pret;
+			delete[]this->utilizat;
+			if (bilet.utilizat != NULL) {
+				this->utilizat = new bool[3];
+				for (int i=0; i < 3; i++) {
+					this->utilizat[i] = bilet.utilizat[i];
+				}
+			}
+			else {
+				this->utilizat = NULL;
+			}
+		} 
+		return *this;
+	}
+
+	bool operator!=(const Bilet& bilet) {
+		return this->pret != bilet.pret;
+	}
+
+	Bilet operator-(const Bilet& bilet) {
+		Bilet aux(*this);
+		aux.pret -= bilet.pret;
+		return aux;
+	}
+
+	Bilet operator*(float factor) {
+		Bilet aux(*this);
+		aux.pret *= factor;
+		return aux;
 	}
 };
 
@@ -260,6 +332,42 @@ public:
 		cout << "Trenul cu numele " <<this->nume << " ,are un numar de " <<this->nrVagoane << " vagoane. "<<endl;
 
 	}
+
+	Tren& operator=(const Tren& tren) {
+		if (this != &tren) {
+			this->nume = tren.nume;
+			this->nrVagoane = tren.nrVagoane;
+			delete[]this->capacitate;
+			if (tren.capacitate != NULL)
+			{
+				this->capacitate = new int[3];
+				for (int i = 0; i < 3; i++) {
+					this->capacitate[i] = tren.capacitate[i];
+				}
+			}
+			else {
+				this->capacitate = NULL;
+			}
+		}
+		return *this;
+	}
+
+	Tren& operator++() {
+		this->nrVagoane++;
+		return *this;
+	}
+
+	Tren operator/(int factor) {
+		Tren aux(*this);
+		aux.nrVagoane /= factor;
+		return aux;
+	}
+
+	Tren operator--(int) {
+		Tren aux(*this);
+		this->nrVagoane--;
+		return aux;
+	}
 };
 
 string Tren::companie = "";
@@ -316,6 +424,34 @@ int main()
 	cout << endl;
 	
 	detaliiPasager(pasager2);
+	
+	Pasager pasager4;
+	pasager4 = pasager3;
+
+	if (pasager2 == pasager3) {
+		cout << "Pasagerii sunt identici! " << endl;
+	}
+
+	Pasager pasager5 = pasager2 + pasager3;
+
+	Tren tren4 = ++tren3;
+	cout << "Numarul de vagoane al trenului incrementat este: " << tren4.getNrVagoane() << endl;
+
+	Tren tren5 = tren2 / 2;
+	cout << "Numarul de vagoane al trenului5 este: " << tren5.getNrVagoane() << endl;
+
+	Tren tren6 = tren3--;
+	cout << "Numarul de vagoane al trenului decrementat este: " << tren6.getNrVagoane() << endl;
+
+
 	detaliiBilet(bilet2);
+	int bilet = pasager3[1];
+	cout << "Biletul de pe pozitia 1 este: " << bilet << endl;
+
+	Bilet bilet4 = bilet2 - bilet3;
+	cout << "Diferenta de pret dintre cele 2 bilete este: " << bilet4.getPret() << endl;
+
+	Bilet bilet5 = bilet3 * 2.5;
+	cout << "Pretul noului bilet este: " << bilet5.getPret() << endl;
 
 }
