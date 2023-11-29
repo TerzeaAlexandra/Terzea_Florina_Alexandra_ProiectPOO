@@ -1,264 +1,431 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include<string>
+#include <fstream>
 using namespace std;
 
 
 //domeniul este transport feroviar
 
-class Pasager {
-private:
+class Pasager
+{
+
+	const int id; 
 	string nume;
 	int varsta;
-	const int id;
-	static int nrPasageri;
-	int* bilete;
-
+	int nrBilete;
+	string* destinatie;
+	float* pret;
+	static int contor;
+	static float reducereStudent;
 public:
 
-	Pasager() : id(0) {
+	Pasager() : id(contor++)
+	{
 		this->nume = "NoName";
 		this->varsta = 0;
-		this->bilete = NULL;
-		nrPasageri++;
+		this->nrBilete = 0;
+		this->destinatie = NULL;
+		this->pret = NULL;
+
 	}
 
-	Pasager(string nume, int varsta) : id(3) {
+	Pasager(string nume, int varsta) :id(contor++)
+	{
 		this->nume = nume;
 		this->varsta = varsta;
-		this->bilete = NULL;
-		nrPasageri++;
-
+		this->nrBilete = 0;
+		this->destinatie = NULL;
+		this->pret = NULL;
 	}
 
-	Pasager(string nume, int varsta, int* bilete, int size) : id(5) {
+
+	Pasager(string nume, int varsta, int nrBilete, string* destinatie, float* pret) :id(contor++)
+	{
 		this->nume = nume;
 		this->varsta = varsta;
-		this->bilete = new int[size];
-		for (int i = 0; i < size; i++) {
-			this->bilete[i] = bilete[i];
+		this->nrBilete = nrBilete;
+		this->destinatie = new string[this->nrBilete];
+		this->pret = new float[this->nrBilete];
+		for (int i = 0; i < this->nrBilete; i++)
+		{
+			this->destinatie[i] = destinatie[i];
+			this->pret[i] = pret[i];
 		}
-		nrPasageri++;
 	}
 
-	Pasager(const Pasager& pasager) : id(pasager.id) {
-		this->nume = pasager.nume;
-		this->varsta = pasager.varsta;
-		if (pasager.bilete != NULL) {
-			this->bilete = new int[2];
-			for (int i = 0; i < 2; i++) {
-				this->bilete[i] = pasager.bilete[i];
-			}
+
+	Pasager(const Pasager& p) :id(p.id)
+	{
+		this->nume = p.nume;
+		this->varsta = p.varsta;
+		this->nrBilete = p.nrBilete;
+		this->destinatie = new string[this->nrBilete];
+		this->pret = new float[this->nrBilete];
+		for (int i = 0; i < this->nrBilete; i++)
+		{
+			this->destinatie[i] = p.destinatie[i];
+			this->pret[i] = p.pret[i];
 		}
-		else {
-			this->bilete = NULL;
-		}
-		nrPasageri++;
 	}
 
-	~Pasager() {
-		delete[] bilete;
-		nrPasageri--;
-	}
-
-	string getNume() const {
-		return this->nume;
-	}
-
-	void setNume(string& nume) {
-		this->nume = nume;
-	}
-
-	int getVarsta() const {
-		return this->varsta;
-	}
-
-	void setVarsta(int varsta) {
-		this->varsta = varsta;
-	}
-
-	int getId() const {
+	const int getId()
+	{
 		return this->id;
 	}
 
-	static int getNrPasageri() {
-		return nrPasageri;
+	string getNume()
+	{
+		return this->nume;
 	}
 
-
-	void afisare() const {
-		cout << " Pasagerul cu numele " << nume << " are varsta de " << varsta << " ani." << endl;
-
+	void setNume(string nume) {
+		this->nume = nume;
 	}
 
-	Pasager& operator=(const Pasager& pasager) {
-		if (this != &pasager) {
-			this->nume = pasager.nume;
-			this->varsta = pasager.varsta;
-			delete[] this->bilete;
-			if (pasager.bilete != NULL) {
-				this->bilete = new int[2];
-				for (int i = 0; i < 2; i++) {
-					this->bilete[i] = pasager.bilete[i];
-				}
-			}
-			else {
-				this->bilete = NULL;
-			}
+	int getVarsta()
+	{
+		return this->varsta;
+	}
+
+	//validare setter
+	void setVarsta(int varsta)
+	{
+		if (this->varsta > 18)
+		{
+			this->varsta = varsta;
+		}
+	}
+
+	int getNrBilete()
+	{
+		return this->nrBilete;
+	}
+	string* getDestinatie()
+	{
+		return this->destinatie;
+	}
+	float* getPret()
+	{
+		return this->pret;
+	}
+
+	void setBilete(int nrBilete, string* destinatie, float* pret)
+	{
+		delete[]this->destinatie;
+		delete[]this->pret;
+		this->nrBilete = nrBilete;
+		this->destinatie = new string[this->nrBilete];
+		this->pret = new float[this->nrBilete];
+		for (int i = 0; i < this->nrBilete; i++)
+		{
+			this->destinatie[i] = destinatie[i];
+			this->pret[i] = pret[i];
+		}
+	}
+
+	Pasager& operator=(const Pasager& p)
+	{
+		delete[]this->pret;
+		delete[]this->destinatie;
+		this->nume = p.nume;
+		this->varsta = p.varsta;
+		this->nrBilete = p.nrBilete;
+		this->destinatie = new string[this->nrBilete];
+		this->pret = new float[this->nrBilete];
+		for (int i = 0; i < this->nrBilete; i++)
+		{
+			this->destinatie[i] = p.destinatie[i];
+			this->pret[i] = p.pret[i];
 		}
 		return *this;
 	}
 
-	bool operator==(const Pasager& pasager) {
-		return this->nume == pasager.nume && this->varsta == pasager.varsta;
-	}
-
-	Pasager operator+(const Pasager& pasager) {
-		Pasager aux;
-		aux.nume = this->nume;
-		aux.varsta += pasager.varsta;
-		return aux;
-	}
-
-	int operator[](int index) {
-		if (index >= 0 && index < 2) {
-			return this->bilete[index];
+	
+	float operator[](int poz)
+	{
+		if (poz >= 0 && poz < this->nrBilete)
+		{
+			return this->pret[poz];
 		}
-		else {
-			throw 404;
+	}
+
+
+	~Pasager()
+	{
+		if (this->destinatie != NULL)
+		{
+			delete[]this->destinatie;
+		}
+		if (this->pret != NULL)
+		{
+			delete[]this->pret;
 		}
 	}
 
 	
-};
-int Pasager::nrPasageri = 0;
-
-void citestePasageri(Pasager* pasageri, int n) {
-	for (int i = 0; i < n; i++) {
-		string nume;
-		int varsta;
-		cout << "Numele pasagerului este: " << i + 1 << " ";;
-		getline(cin, nume);
-		cout << "Varsta pasagerului este " << i + 1 << " :";
-		cin >> varsta;
-		pasageri[i] = Pasager(nume, varsta);
+	Pasager& operator++()
+	{
+		this->varsta++;
+		return *this;
 	}
-}
-
-void afiseazaPasageri(const Pasager* pasageri, int n) {
-	cout << "Pasageri: " << endl;
-	for (int i = 0; i < n; i++) {
-		cout << "Pasager " << i + 1 << " ";
-		pasageri[i].afisare();
-
-	}
-}
-
-
-
-class Bilet {
-private:
-	string destinatie;
-	float pret;
-	const int id;
-	static string companie;
-	bool* utilizat;
-
-public:
-	Bilet() :id(0) {
-		this->destinatie = "numeDestinatie";
-		this->pret = 0.0;
-		this->utilizat = NULL;
+	Pasager& operator++(int)
+	{
+		Pasager copie = *this;
+		this->varsta++;
+		return copie;
 	}
 
-	Bilet(string destinatie, float pret) : id(1) {
-		this->destinatie = destinatie;
-		this->pret = pret;
-		this->utilizat = NULL;
-
-	}
-
-	Bilet(string destinatie, float pret, bool* utilizat, int size) : id(2) {
-		this->destinatie = destinatie;
-		this->pret = pret;
-		this->utilizat = new bool[size];
-		for (int i = 0; i < size; i++) {
-			this->utilizat[i] = utilizat[i];
+	
+	Pasager& operator-=(int poz)
+	{
+		Pasager copie = *this;
+		if (this->destinatie != NULL)
+		{
+			delete[]this->destinatie;
 		}
-	}
-
-	Bilet(const Bilet& bilet) : id(bilet.id) {
-		this->destinatie = bilet.destinatie;
-		this->pret = bilet.pret;
-		if (bilet.utilizat != NULL) {
-			this->utilizat = new bool[3];
-			for (int i = 0; i < 3; i++) {
-				this->utilizat[i] = bilet.utilizat[i];
-			}
+		if (this->pret != NULL)
+		{
+			delete[]this->pret;
 		}
-		else {
-			this->utilizat = NULL;
+		this->nrBilete--;
+		this->pret = new float[this->nrBilete];
+		this->destinatie = new string[this->nrBilete];
+		for (int i = 0; i < poz; i++)
+		{
+			this->pret[i] = copie.pret[i];
+			this->destinatie[i] = copie.destinatie[i];
 		}
-	}
-
-	string getDestinatie() const {
-		return this->destinatie;
-	}
-
-	void setDestinatie(string& destinatie) {
-		this->destinatie = destinatie;
-	}
-
-	float getPret() const {
-		return pret;
-	}
-
-	void setPret(float pret) {
-		if (pret >= 0) {
-			this->pret = pret;
-		}
-	}
-
-	int getId() const {
-		return id;
-	}
-
-	static string getCompanie() {
-		return companie;
-	}
-
-	~Bilet() {
-		delete[] utilizat;
-	}
-
-
-	void afisareDestinatie() const {
-		cout << "Urmatorul tren are destinatia " << destinatie << ", pretul unui bilet fiind de " << pret << " lei." << endl;
-
-	}
-
-	Bilet& operator=(const Bilet& bilet) {
-		if (this != &bilet) {
-			this->destinatie = bilet.destinatie;
-			this->pret = bilet.pret;
-			delete[]this->utilizat;
-			if (bilet.utilizat != NULL) {
-				this->utilizat = new bool[3];
-				for (int i = 0; i < 3; i++) {
-					this->utilizat[i] = bilet.utilizat[i];
-				}
-			}
-			else {
-				this->utilizat = NULL;
-			}
+		for (int i = poz + 1; i < copie.nrBilete; i++)
+		{
+			this->pret[i - 1] = copie.pret[i];
+			this->destinatie[i - 1] = copie.destinatie[i];
 		}
 		return *this;
 	}
 
-	bool operator!=(const Bilet& bilet) {
-		return this->pret != bilet.pret;
+	
+	friend ostream& operator<<(ostream& out, Pasager& p)
+	{
+		out << "Id: " << p.id << endl;
+		out << "Nume: " << p.nume << endl;
+		out << "Varsta: " << p.varsta << endl;
+		out << "Nr bilete: " << p.nrBilete << endl;
+		out << "Destinatii: " << endl;
+		for (int i = 0; i < p.nrBilete; i++)
+		{
+			out << p.destinatie[i] << endl;
+			out << "Pret bilete: " << endl;
+			out << p.pret[i] << endl;
+		}
+		return out;
 	}
 
-	Bilet operator-(const Bilet& bilet) {
+	friend istream& operator>>(istream& in, Pasager& p)
+	{
+		delete[]p.destinatie;
+		delete[]p.pret;
+		in >> p.nume;
+		cout << endl << endl;
+		in >> p.varsta;
+		cout << endl << endl;
+		in >> p.nrBilete;
+		cout << endl << endl;
+		p.destinatie = new string[p.nrBilete];
+		p.pret = new float[p.nrBilete];
+		for (int i = 0; i < p.nrBilete; i++)
+		{
+			in >> p.destinatie[i];
+			cout << endl << endl;
+			in >> p.pret[i];
+		}
+		return in;
+	}
+
+	void afisare()
+	{
+		cout << "Numele pasagerului este: " << this->nume << " ,are varsta: " << this->varsta << " ,are nr bilete " << this->nrBilete << ", aceste bilete au destinatiile:  ";
+		for (int i = 0; i < this->nrBilete; i++)
+		{
+			cout << this->destinatie[i] << " " << " si costa: ";
+			cout << this->pret[i] << endl;
+
+		}
+		cout << "Pasagerul are reducere, daca este student: " << this->reducereStudent;
+		cout << endl;
+	}
+
+	static void setReducereStudent(float reducereStudent)
+	{
+		Pasager::reducereStudent = reducereStudent;
+	}
+
+	static float getReducereStudent() {
+		return Pasager::reducereStudent;
+	}
+
+	friend ofstream& operator<<(ofstream& file, Pasager& p)
+	{
+		file << p.nume << endl;
+		file << p.varsta << endl;
+		file << p.nrBilete << endl;
+		file << p.destinatie << endl;
+		for (int i = 0; i < p.nrBilete; i++) {
+			file << p.pret[i] << endl;
+		}
+		return file;
+	}
+
+	friend ifstream& operator>>(ifstream& file, Pasager& p)
+	{
+		if (p.destinatie != NULL) {
+			delete[]p.destinatie;
+		}
+		if (p.pret != NULL) {
+			delete[]p.pret;
+		}
+		file >> p.nume;
+		file >> p.varsta;
+		file >> p.nrBilete;
+		p.destinatie = new string[p.nrBilete];
+		p.pret = new float[p.nrBilete];
+		for (int i = 0; i < p.nrBilete; i++)
+		{
+			file >> p.destinatie[i];
+			file >> p.pret[i];
+		}
+		return file;
+	}
+};
+
+int Pasager::contor = 12334;
+float Pasager::reducereStudent = 0.9;
+
+class Bilet
+{
+	const int serie;
+	char* destinatie;
+	float pret;
+	bool utilizat;
+	static int contor;
+	static float TVA;
+public:
+	Bilet() :serie(contor++)
+	{
+		this->destinatie = new char[strlen("destinatie necunoscuta") + 1];
+		strcpy(this->destinatie, "destinatie necunoscuta");
+		this->pret = 0;
+		this->utilizat = 0;
+
+	}
+
+	Bilet(const char* destinatie) :serie(contor++)
+	{
+		this->destinatie = new char[strlen(destinatie) + 1];
+		strcpy(this->destinatie, destinatie);
+		this->pret = 0;
+		this->utilizat = 0;
+
+	}
+
+	Bilet(const char* destinatie, float pret, bool utilizat) :serie(contor++)
+	{
+		this->destinatie = new char[strlen(destinatie) + 1];
+		strcpy(this->destinatie, destinatie);
+		this->pret = pret;
+		this->utilizat = utilizat;
+	}
+
+	Bilet(const Bilet& bilet) :serie(contor++)
+	{
+		this->destinatie = new char[strlen(bilet.destinatie) + 1];
+		strcpy(this->destinatie, bilet.destinatie);
+		this->pret = bilet.pret;
+		this->utilizat = bilet.utilizat;
+	}
+
+	~Bilet()
+	{
+		if (this->destinatie != NULL)
+		{
+			delete[]this->destinatie;
+		}
+	}
+
+
+	Bilet& operator=(const Bilet& bilet)
+	{
+		if (this->destinatie != NULL)
+		{
+			delete[]this->destinatie;
+		}
+		this->destinatie = new char[strlen(bilet.destinatie) + 1];
+		strcpy(this->destinatie, bilet.destinatie);
+		this->pret = bilet.pret;
+		this->utilizat = bilet.utilizat;
+		return *this;
+	}
+
+	
+	int getSerie()
+	{
+		return this->serie;
+	}
+	const char* getDestinatie()
+	{
+		return this->destinatie;
+	}
+	float getPret()
+	{
+		return this->pret;
+	}
+	bool getUtilizat()
+	{
+		return this->utilizat;
+	}
+
+	void setDestinatie(const char* destinatie)
+	{
+
+		if (this->destinatie != NULL)
+		{
+			delete[]this->destinatie;
+		}
+		this->destinatie = new char[strlen(destinatie) + 1];
+		strcpy(this->destinatie, destinatie);
+	}
+	
+	void setPret(float pret)
+	{
+		if (this->pret > 10)
+		{
+			this->pret = pret;
+		}
+		else
+		{
+			this->pret = 15.6;
+		}
+	}
+
+	void setUtilizare(bool utilizare)
+	{
+		this->utilizat = utilizat;
+	}
+
+	bool operator!=(Bilet& b)
+	{
+		if (this->pret != b.pret)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	Bilet operator-(const Bilet& bilet)
+	{
 		Bilet aux(*this);
 		aux.pret -= bilet.pret;
 		return aux;
@@ -269,363 +436,1099 @@ public:
 		aux.pret *= factor;
 		return aux;
 	}
+
+	
+	friend ostream& operator<<(ostream& out, Bilet& bilet)
+	{
+		out << "Serie: " << bilet.serie << endl;
+		out << "Destinatie:" << bilet.destinatie << endl;
+		out << "Pret: " << bilet.pret << endl;
+		out << "Utilizat: " << bilet.utilizat << endl;
+		return out;
+	}
+	
+	friend istream& operator>>(istream& in, Bilet& bilet)
+	{
+		delete[]bilet.destinatie;
+		char aux[100];
+		in >> aux;
+		bilet.destinatie = new char[strlen(aux) + 1];
+		strcpy(bilet.destinatie, aux);
+		cout << endl << endl;
+		in >> bilet.pret;
+		cout << endl << endl;
+		in >> bilet.utilizat;
+		cout << endl << endl;
+		return in;
+	}
+
+	void afisare()
+	{
+		cout << "Seria de pe bilet este: " << this->serie << " ,destinatia de pe bilet este: " << this->destinatie << " ,biletul are pretul de: " << this->pret << " si este utilizat (1-este; 0-nu este): " << this->utilizat;
+		cout << "TVA-ul aplicat pentru un bilet este: " << this->TVA;
+		cout << endl;
+	}
+
+	static void setTVA(float TVA)
+	{
+		Bilet::TVA = TVA;
+	}
+
+	static float getTVA() {
+		return Bilet::TVA;
+	}
+
+	
+
+	void scriereBinar(fstream& file)
+	{
+		int nrLitereDestinatie = strlen(this->destinatie);
+		file.write((char*)&nrLitereDestinatie, sizeof(int));
+		for (int i = 0; i < nrLitereDestinatie; i++)
+		{
+			file.write((char*)&this->destinatie[i], sizeof(char));
+		}
+
+		file.write((char*)&this->pret, sizeof(float));
+		file.write((char*)&this->utilizat, sizeof(bool));
+	}
+
+
+	void citireBinar(fstream& file)
+	{
+		if (this->destinatie != NULL)
+		{
+			delete[]this->destinatie;
+		}
+		int nrLitereDestinatie;
+		file.read((char*)&nrLitereDestinatie, sizeof(int));
+		this->destinatie = new char[nrLitereDestinatie + 1];
+		for (int i = 0; i < nrLitereDestinatie; i++)
+		{
+			file.read((char*)&this->destinatie[i], sizeof(char));
+		}
+		this->destinatie[nrLitereDestinatie] = '\0';
+		file.read((char*)&this->pret, sizeof(float));
+		file.read((char*)&this->utilizat, sizeof(bool));
+	}
 };
 
-string Bilet::companie = "";
+int Bilet::contor = 1;
+float Bilet::TVA = 0.19;
 
-void citesteBilete(Bilet* bilete, int n) {
-	for (int i = 0; i < n; i++) {
-		string destinatie;
-		float pret;
-		cout << "Destinatia este: " << i + 1 << " ";
-		getline(cin, destinatie);
-		cout << "Pretul biletului este :" << i + 1 << " ";
-		cin >> pret;
-		bilete[i] = Bilet(destinatie, pret);
-	}
-}
 
-void afiseazaBilete(const Bilet* bilete, int n) {
-	cout << "Bilete: " << endl;
-	for (int i = 0; i < n; i++) {
-		cout << "Bilet " << i + 1 << " ";
-		bilete[i].afisareDestinatie();
-	}
-}
 
 
 class Tren {
-private:
-	string nume;
-	int nrVagoane;
-	static string companie;
-	const int idTren;
-	int* capacitate;
 
+	const int idTren;
+	string companie;
+	int nrVagoane;
+	int* capacitate;
+	static int contor;
+	static int nrSoferi;
 public:
-	Tren() : idTren(1) {
-		this->nume = "FaraNume";
+	Tren() : idTren(contor++) {
+		this->companie = "CFR";
 		this->nrVagoane = 0;
 		this->capacitate = NULL;
 	}
 
-	Tren(string nume, int nrVagoane) : idTren(2) {
-		this->nume = nume;
-		this->nrVagoane = nrVagoane;
+	Tren(string companie) : idTren(2) {
+		this->companie = companie;
+		this->nrVagoane = 0;
 		this->capacitate = NULL;
-
-
 	}
 
-	Tren(string nume, int nrVagoane, int* capacitate, int size) : idTren(3) {
-		this->nume = nume;
+	Tren(string companie, int nrVagoane, int* capacitate) :idTren(contor++)
+	{
+		this->companie = companie;
 		this->nrVagoane = nrVagoane;
-		this->capacitate = new int[size];
-		for (int i = 0; i < size; i++) {
+		this->capacitate = new int[this->nrVagoane];
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
 			this->capacitate[i] = capacitate[i];
+		}
 
+	}
+
+	Tren(const Tren& t) :idTren(t.idTren)
+	{
+		this->companie = t.companie;
+		this->nrVagoane = t.nrVagoane;
+		this->capacitate = new int[this->nrVagoane];
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
+			this->capacitate[i] = t.capacitate[i];
 		}
 	}
 
-	Tren(const Tren& tren) : idTren(tren.idTren) {
-		this->nume = tren.nume;
-		this->nrVagoane = tren.nrVagoane;
-		if (tren.capacitate != NULL) {
-			this->capacitate = new int[3];
-			for (int i = 0; i < 3; i++) {
-				this->capacitate[i] = tren.capacitate[i];
-			}
+	Tren& operator=(const Tren& t)
+	{
+		if (this->capacitate)
+		{
+			delete[]this->capacitate;
 		}
-		else {
-			this->capacitate = NULL;
+		this->companie = t.companie;
+		this->nrVagoane = t.nrVagoane;
+		this->capacitate = new int[this->nrVagoane];
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
+			this->capacitate[i] = t.capacitate[i];
 		}
+		return *this;
 	}
 
 	~Tren() {
-		delete[] capacitate;
-	}
 
-	string getNume() const {
-		return nume;
-	}
+		if (this->capacitate)
+		{
+			delete[]this->capacitate;
+		}
 
-	void setNume(const string& nume) {
-		this->nume = nume;
-	}
-
-	int getNrVagoane() const {
-		return nrVagoane;
-	}
-
-	void setNrVagoane(int nrVagoane) {
-		this->nrVagoane = nrVagoane;
 	}
 
 	int getIdTren() {
 		return idTren;
 	}
-
-	static string getCompanie() {
-		return companie;
+	string getCompanie()
+	{
+		return this->companie;
 	}
 
-	void afisare() const {
-		cout << "Trenul cu numele " << this->nume << " ,are un numar de " << this->nrVagoane << " vagoane. " << endl;
-
+	void setCompanie(string companie)
+	{
+		this->companie = companie;
 	}
 
-	Tren& operator=(const Tren& tren) {
-		if (this != &tren) {
-			this->nume = tren.nume;
-			this->nrVagoane = tren.nrVagoane;
+	int getNrVagoane()
+	{
+		return this->nrVagoane;
+	}
+
+	int* getCapacitate()
+	{
+		return this->capacitate;
+	}
+
+	void setVagoane(int nrVagoane, int* capacitate)
+	{
+		if (this->capacitate)
+		{
 			delete[]this->capacitate;
-			if (tren.capacitate != NULL)
-			{
-				this->capacitate = new int[3];
-				for (int i = 0; i < 3; i++) {
-					this->capacitate[i] = tren.capacitate[i];
-				}
-			}
-			else {
-				this->capacitate = NULL;
-			}
 		}
-		return *this;
+		this->nrVagoane = nrVagoane;
+		this->capacitate = new int[this->nrVagoane];
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
+			this->capacitate[i] = capacitate[i];
+		}
 	}
 
-	Tren& operator++() {
-		this->nrVagoane++;
-		return *this;
+
+	bool operator>=(Tren& t)
+	{
+		if (this->nrVagoane >= t.nrVagoane)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
-	Tren operator/(int factor) {
-		Tren aux(*this);
-		aux.nrVagoane /= factor;
-		return aux;
+	//operatorul functie prin care marim capacitatea unui vagon de pe o anumita pozitie
+	void operator()(int poz, int capacitateSuplimentata)
+	{
+		this->capacitate[poz] = this->capacitate[poz] + capacitateSuplimentata;
 	}
 
-	Tren operator--(int) {
-		Tren aux(*this);
-		this->nrVagoane--;
-		return aux;
+	int operator[](int poz)
+	{
+		if (poz >= 0 && poz < this->nrVagoane)
+		{
+			return this->capacitate[poz];
+		}
 	}
 
-	bool operator==(const Tren& tren) {
-		return this->nume == tren.nume && this->nrVagoane == tren.nrVagoane;
-	}
-};
-string Tren::companie = "";
-
-void citesteTrenuri(Tren* trenuri, int n) {
-	for (int i = 0; i < n; i++) {
-		string nume;
-		int nrVagoane;
-		cout << "Numele trenului " << i + 1 << " ";
-		getline(cin, nume);
-		cout << "Numarul de vagoane ale trenului: " << i + 1 << " ";
-		cin >> nrVagoane;
-		trenuri[i] = Tren(nume, nrVagoane);
-	}
-}
-
-void afiseazaTrenuri(const Tren* trenuri, int n) {
-	cout << "Trenuri: " << endl;
-	for (int i = 0; i < n; i++) {
-		cout << "Tren " << i + 1 << " ";
-		trenuri[i].afisare();
-	}
-}
-
-class Calatorie {
-private:
-	Tren tren;
-	string destinatie;
-	int nrPasageri;
-public:
-	Calatorie() {
-		this->tren = Tren();
-		this->destinatie = "Fara Destinatie";
-		this->nrPasageri = 0;
-	}
-
-	Calatorie(const Tren& tren, const string& destinatie, int nrPasageri) {
-		this->tren = tren;
-		this->destinatie = destinatie;
-		this->nrPasageri = nrPasageri;
-	}
-
-	Tren getTren() const {
-		return tren;
-	}
-	void setTren(const Tren& tren) {
-		this->tren = tren;
-	}
-
-	string getDestinatie() const {
-		return destinatie;
-	}
-
-	void setDestinatie(const string& destinatie) {
-		this->destinatie = destinatie;
-	}
-
-	int getNrPasageri() const {
-		return nrPasageri;
-	}
-
-	void setNrPasageri(int nrPasageri) {
-		this->nrPasageri = nrPasageri;
+	
+	friend ostream& operator<<(ostream& out, Tren& t)
+	{
+		out << "Id tren: " << t.idTren << endl;
+		out << "Companie: " << t.companie << endl;
+		out << "Nr vagoane: " << t.nrVagoane << endl;
+		out << "Capacitate fiecare vagon:" << endl;
+		for (int i = 0; i < t.nrVagoane; i++)
+		{
+			out << t.capacitate[i] << endl;
+		}
+		return out;
 	}
 	
-	void afisareDetalii() const {
-		cout << "Calatorie cu destinatia " << destinatie << ", are un numar de" << nrPasageri << " pasageri" << endl;
-		tren.afisare();
+	friend istream& operator>>(istream& in, Tren& t)
+	{
+		delete[]t.capacitate;
+		in >> t.companie;
+		cout << endl << endl;
+		in >> t.nrVagoane;
+		cout << endl << endl;
+		t.capacitate = new int[t.nrVagoane];
+		for (int i = 0; i < t.nrVagoane; i++)
+		{
+			in >> t.capacitate[i];
+		}
+		return in;
 	}
 
-	Calatorie& operator=(const Calatorie& calatorie) {
-		if (this != &calatorie) {
-			this->tren = calatorie.tren;
-			this->destinatie = calatorie.destinatie;
-			this->nrPasageri = calatorie.nrPasageri;
+	void afisare()
+	{
+		cout << "Compania care detine trenul este: " << this->companie << " ,nr de vagoane este: " << this->nrVagoane << " ,iar fiecare vagon are o capacitate de: ";
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
+			cout << this->capacitate[i] << " " << endl;
+		}
+		cout << "Nr de soferi al unui tren este: " << this->nrSoferi;
+		cout << endl;
+	}
+
+	static void setNrSoferi(int nrSoferi)
+	{
+		Tren::nrSoferi = nrSoferi;
+	}
+
+	static float getNrSoferi() {
+		return Tren::nrSoferi;
+	}
+
+	void scriereBinar(fstream& file) {
+		int nrLitereCompanie = this->companie.size();
+		file.write((char*)&nrLitereCompanie, sizeof(int));
+		file.write(this->companie.c_str(), nrLitereCompanie);
+		file.write((char*)&this->nrVagoane, sizeof(int));
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
+			file.write((char*)&this->capacitate[i], sizeof(int));
+
+		}
+	}
+
+	
+	void citireBinar(fstream& file)
+	{
+		if (this->capacitate != NULL) {
+			delete[]this->capacitate;
+		}
+		int nrLitereCompanie;
+		file.read((char*)&nrLitereCompanie, sizeof(int));
+		string aux;
+		aux.resize(nrLitereCompanie);
+		file.read((char*)aux.c_str(), nrLitereCompanie);
+		this->companie = aux;
+		file.read((char*)&this->nrVagoane, sizeof(int));
+		this->capacitate = new int[this->nrVagoane];
+		for (int i = 0; i < this->nrVagoane; i++)
+		{
+			file.read((char*)&this->capacitate[i], sizeof(int));
+		}
+	}
+};
+int Tren::contor = 376338;
+int Tren::nrSoferi = 2;
+
+class Gara
+{
+	const int idGara;
+	string oras;
+	int nrTrenuri;
+	Tren* trenuri; //capacitateFiecareTren
+	static int contor;
+	static int nrMaximTrenuri; //cate trenuri pot stationa in gara maxim
+public:
+	Gara() :idGara(contor++)
+	{
+		this->oras = "Bucuresti";
+		this->nrTrenuri = 0;
+		this->trenuri = NULL;
+	}
+
+	Gara(string oras, int nrTrenuri, Tren* trenuri) :idGara(contor++)
+	{
+		this->oras = oras;
+		this->nrTrenuri = nrTrenuri;
+		this->trenuri = new Tren[this->nrTrenuri];
+		for (int i = 0; i < this->nrTrenuri; i++)
+		{
+			this->trenuri[i] = trenuri[i];
+		}
+	}
+
+	~Gara()
+	{
+		if (this->trenuri != NULL)
+		{
+			delete[]this->trenuri;
+		}
+	}
+
+	//constr de copiere
+	Gara(const Gara& g) :idGara(g.idGara)
+	{
+		this->oras = g.oras;
+		this->nrTrenuri = g.nrTrenuri;
+		this->trenuri = new Tren[this->nrTrenuri];
+		for (int i = 0; i < this->nrTrenuri; i++)
+		{
+			this->trenuri[i] = g.trenuri[i];
+		}
+	}
+	
+	Gara& operator=(const Gara& g)
+	{
+		if (this->trenuri != NULL)
+		{
+			delete[]this->trenuri;
+		}
+		this->oras = g.oras;
+		this->nrTrenuri = g.nrTrenuri;
+		this->trenuri = new Tren[this->nrTrenuri];
+		for (int i = 0; i < this->nrTrenuri; i++)
+		{
+			this->trenuri[i] = g.trenuri[i];
 		}
 		return *this;
 	}
-
-	bool operator==(const Calatorie& calatorie) {
-		return this->tren == calatorie.tren && this->destinatie == calatorie.destinatie && this->nrPasageri == calatorie.nrPasageri;
+	
+	const int getIdGara()
+	{
+		return this->idGara;
+	}
+	string getOras()
+	{
+		return this->oras;
+	}
+	int getNrTrenuri()
+	{
+		return this->nrTrenuri;
+	}
+	Tren* getTrenuri()
+	{
+		return this->trenuri;
+	}
+	//setteri
+	void setOras(string oras)
+	{
+		this->oras = oras;
+	}
+	void setTrenuri(int nrTrenuri, Tren* trenuri)
+	{
+		if (this->trenuri != NULL)
+		{
+			delete[]this->trenuri;
+		}
+		this->nrTrenuri = nrTrenuri;
+		this->trenuri = new Tren[this->nrTrenuri];
+		for (int i = 0; i < this->nrTrenuri; i++)
+		{
+			this->trenuri[i] = trenuri[i];
+		}
+	}
+	
+	friend ostream& operator<<(ostream& out, Gara& g)
+	{
+		out << "Id gara: " << g.idGara << endl;
+		out << "Oras: " << g.oras << endl;
+		out << "Nr trenuri: " << g.nrTrenuri << endl;
+		out << "Trenuri: " << endl;
+		for (int i = 0; i < g.nrTrenuri; i++)
+		{
+			out << g.trenuri[i] << endl;
+		}
+		return out;
 	}
 
-	Calatorie operator+(int nrPasageri) {
-		Calatorie aux(*this);
-		aux.nrPasageri += nrPasageri;
-		return aux;
+	friend istream& operator>>(istream& in, Gara& g)
+	{
+		delete[]g.trenuri;
+		cout << "Introduceti de la tastatura orasul: " << endl;
+		in >> g.oras;
+		cout << "Introduceti de la tastatura nr trenuri: " << endl;
+		in >> g.nrTrenuri;
+		cout << "Introduceti de la tastatura trenurile: " << endl;
+		g.trenuri = new Tren[g.nrTrenuri];
+		for (int i = 0; i < g.nrTrenuri; i++)
+		{
+			in >> g.trenuri[i];
+		}
+		return in;
 	}
 
+	void afiseaza()
+	{
+		cout << "Orasul in care se afla gara este: " << this->oras << ", nr de trenuri din gara este: " << this->nrTrenuri << ", iar trenurile din gara sunt: " << endl;
+		for (int i = 0; i < this->nrTrenuri; i++)
+		{
+			cout << this->trenuri[i] << endl;
+		}
+		cout << "Nr maxim de trenuri ce pot stationa in gara este: " << this->nrMaximTrenuri << endl;
+	}
+
+	static void setNrMaxTrenuri(int nrMaximTrenuri)
+	{
+		Gara::nrMaximTrenuri = nrMaximTrenuri;
+	}
+
+	static float getNrMaximTrenuri() {
+		return Gara::nrMaximTrenuri;
+	}
+
+	//Op de cast la string
+	operator string()
+	{
+		string propozitie = "Orasul in care se afla gara este: " + this->oras;
+		return propozitie;
+	}
+	//op+=
+	Gara& operator+=(Tren tren)
+	{
+		Gara copie = *this;
+		delete[]this->trenuri;
+		this->nrTrenuri++;
+		this->trenuri = new Tren[this->nrTrenuri];
+		for (int i = 0; i < copie.nrTrenuri; i++)
+		{
+			this->trenuri[i] = copie.trenuri[i];
+		}
+		this->trenuri[copie.nrTrenuri] = tren;
+		return *this;
+	}
+	//op==
+	bool operator==(Gara& g)
+	{
+		if (this->nrTrenuri == g.nrTrenuri)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	//string oras;
+	//int nrTrenuri;
+	//Tren* trenuri; //capacitateFiecareTren
+	friend ofstream& operator<<(ofstream& file, Gara& g)
+	{
+		file << g.oras << endl;
+		file << g.nrTrenuri << endl;
+		for (int i = 0; i < g.nrTrenuri; i++) {
+			file << g.trenuri << endl;
+		}
+		return file;
+	}
+
+	friend ifstream& operator>>(ifstream& file, Gara& g)
+	{
+		if (g.trenuri != NULL)
+		{
+			delete[]g.trenuri;
+		}
+		file >> g.oras;
+		file >> g.nrTrenuri;
+		g.trenuri = new Tren[g.nrTrenuri];
+		for (int i = 0; i < g.nrTrenuri; i++)
+		{
+			file >> g.trenuri[i];
+		}
+		return file;
+	}
 };
 
+int Gara::contor = 17363920;
+int Gara::nrMaximTrenuri = 23;
 
 
-
-void detaliiPasager(const Pasager& pasager) {
-	cout << "Detalii pasager: " << endl;
-	cout << "Nume: " << pasager.getNume() << endl;
-	cout << "varsta: " << pasager.getVarsta() << endl;
-}
-
-void detaliiBilet(const Bilet& bilet) {
-	cout << "detalii bilet: " << endl;
-	cout << "Destinatie: " << bilet.getDestinatie() << endl;
-	cout << "pret: " << bilet.getPret() << endl;
-}
 
 void main()
 {
-	const int n = 3;
-	Pasager pasageri[n];
-	Bilet bilete[n];
-	Tren trenuri[n];
-	cout << "Introduceti informatiile pentru pasageri: " << endl;
-	citestePasageri(pasageri, n);
-	cout << "Introduceti informatiile pentru bilete: " << endl;
-	citesteBilete(bilete, n);
-	cout << "Introduceti informatiile pentru trenuri: " << endl;
-	citesteTrenuri(trenuri, n);
-	cout << "Afisare pasageri: " << endl;
-	afiseazaPasageri(pasageri, n);
-	cout << "Afisare bilete: " << endl;
-	afiseazaBilete(bilete, n);
-	cout << "Afisare trenuri: " << endl;
-	afiseazaTrenuri(trenuri, n);
 
-	const int m = 2;
-	Tren matrice[m][n];
-	cout << "Introduceti informatiile " << endl;
-	for (int i = 0; i < m; i++) {
-		cout << "Linia " << i + 1 << " " << endl;
-		citesteTrenuri(matrice[i], n);
+	//CLASA PASAGER
+	Pasager p;
+	Pasager p1("Ioana", 20);
+	float vectorPreturi1[] = { 18,90,76,65 };
+	string vectorDestinatii1[] = { "Sinaia","Sibiu","Bucuresti","Constanta" };
+	Pasager p2("Andreea", 19, 4, vectorDestinatii1, vectorPreturi1);
+	float vectorPreturi2[] = { 18,90,76,65,100,87,67 };
+	string vectorDestinatii2[] = { "Sinaia","Sibiu","Bucuresti","Constanta" ,"Pitesti","Buzau","Ploiesti" };
+	Pasager p3("Alexandra", 22, 7, vectorDestinatii2, vectorPreturi2);
+
+	float vectorPreturi3[] = { 345.78 };
+	string vectorDestinatii3[] = { "Viena" };
+	Pasager p4("Paul", 24, 1, vectorDestinatii3, vectorPreturi3);
+
+	p.afisare();
+	cout << endl << endl;
+	p1.afisare();
+	cout << endl << endl;
+	p2.afisare();
+	cout << endl << endl;
+	p3.afisare();
+	cout << endl << endl;
+
+	cout << "--------------Apelare getteri-------------------------" << endl << endl;
+	cout << p.getId() << endl;
+	cout << p.getNume() << endl;
+	cout << p.getVarsta() << endl;
+	cout << p.getNrBilete() << endl;
+	for (int i = 0; i < p.getNrBilete(); i++)
+	{
+		cout << p.getDestinatie()[i] << " ";
+		cout << p.getPret()[i] << endl;
 	}
-	cout << "Afisare matrice: " << endl;
-	for (int i = 0; i < m; i++) {
-		cout << "Linia " << i + 1 << " " << endl;
-		afiseazaTrenuri(matrice[i], n);
+	cout << endl << endl;
+	cout << p1.getId() << endl;
+	cout << p1.getNume() << endl;
+	cout << p1.getVarsta() << endl;
+	cout << p1.getNrBilete() << endl;
+	for (int i = 0; i < p1.getNrBilete(); i++)
+	{
+		cout << p1.getDestinatie()[i] << " ";
+		cout << p1.getPret()[i] << endl;
 	}
-	int bilete1[2] = { 1,2 };
-	Pasager pasager1;
-	Pasager pasager2("Popescu Ion", 35);
-	Pasager pasager3("Teodorescu Vasile", 27, bilete1, 2);
+	cout << endl << endl;
+	cout << p2.getId() << endl;
+	cout << p2.getNume() << endl;
+	cout << p2.getVarsta() << endl;
+	cout << p2.getNrBilete() << endl;
+	for (int i = 0; i < p2.getNrBilete(); i++)
+	{
+		cout << p2.getDestinatie()[i] << " ";
+		cout << p2.getPret()[i] << endl;
+	}
+	cout << p3.getId() << endl;
+	cout << p3.getNume() << endl;
+	cout << p3.getVarsta() << endl;
+	cout << p3.getNrBilete() << endl;
+	for (int i = 0; i < p3.getNrBilete(); i++)
+	{
+		cout << p3.getDestinatie()[i] << " ";
+		cout << p3.getPret()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << p4.getId() << endl;
+	cout << p4.getNume() << endl;
+	cout << p4.getVarsta() << endl;
+	cout << p4.getNrBilete() << endl;
+	for (int i = 0; i < p4.getNrBilete(); i++)
+	{
+		cout << p4.getDestinatie()[i] << " ";
+		cout << p4.getPret()[i] << endl;
+	}
+	cout << endl << endl;
 
-	pasager1.afisare();
-	cout << endl;
-	pasager2.afisare();
-	cout << endl;
-	pasager3.afisare();
-	cout << endl;
+	cout << "--------------Apelare setteri-------------------------" << endl << endl;
+	float vectorPreturi4[] = { 345.7,123.45,456.98 };
+	string vectorDestinatii4[] = { "Budapesta","Sofia","Viena" };
+	p3.setNume("Andrei");
+	p3.setVarsta(22);
+	p3.setBilete(3, vectorDestinatii4, vectorPreturi4);
+	cout << p3.getId() << endl;
+	cout << p3.getNume() << endl;
+	cout << p3.getVarsta() << endl;
+	cout << p3.getNrBilete() << endl;
+	for (int i = 0; i < p3.getNrBilete(); i++)
+	{
+		cout << p3.getDestinatie()[i] << " ";
+		cout << p3.getPret()[i] << endl;
+	}
+	cout << endl << endl;
 
-	bool utilizat1[3] = { true,false,true };
-	Bilet bilet1;
-	Bilet bilet2("Bucuresti", 25.5);
-	Bilet bilet3("Craiova", 26, utilizat1, 3);
+	cout << "--------------Apelare operator<<------------------------" << endl << endl;
+	cout << p << endl << endl;
+	cout << p1 << endl << endl;
+	cout << p2 << endl << endl;
+	cout << p3 << endl << endl;
+	cout << p4 << endl << endl;
 
-	bilet1.afisareDestinatie();
-	cout << endl;
-	bilet2.afisareDestinatie();
-	cout << endl;
-	bilet3.afisareDestinatie();
-	cout << endl;
+	/*cout << "--------------Apelare operator>>------------------------" << endl << endl;
+	cout << p3 << endl;
+	cin >> p3;
+	cout << p3 << endl;*/
 
+	cout << "-----------------Constr de copiere------------------" << endl << endl;
+	Pasager p5 = p4;
+	cout << p5 << endl << endl;
 
-	int capacitate1[3] = { 90,140,190 };
-	Tren tren1;
-	Tren tren2("IR", 4);
-	Tren tren3("R", 5, capacitate1, 3);
+	cout << "---------------Operatorul=-------------------" << endl << endl;
+	cout << p2 << endl << endl;
+	p2 = p3;
+	cout << p2 << endl << endl;
 
-	tren1.afisare();
-	cout << endl;
-	tren2.afisare();
-	cout << endl;
-	tren3.afisare();
-	cout << endl;
+	cout << "--------------Apelare operator[]------------------------" << endl << endl;
+	cout << p3 << endl << endl;
+	cout << p3[0] << endl << endl;
 
-	detaliiPasager(pasager2);
+	cout << "-----------------Apelare operatorul++--------------" << endl << endl;
+	cout << p3 << endl << endl;
+	++p3;
+	cout << p3 << endl << endl;
+	cout << p2 << endl << endl;
+	p2++;
+	cout << p2 << endl << endl;
 
-	Pasager pasager4;
-	pasager4 = pasager3;
+	cout << "-----------------Apelare operatorul-=--------------" << endl << endl;
+	cout << p3 << endl << endl << endl;
+	p3 -= 0;
+	cout << p3 << endl << endl << endl;
 
-	if (pasager2 == pasager3) {
-		cout << "Pasagerii sunt identici! " << endl;
+	Pasager::setReducereStudent(0.5);
+	p.afisare();
+	cout << endl << endl;
+	p1.afisare();
+	cout << endl << endl;
+	p2.afisare();
+	cout << endl << endl;
+	p3.afisare();
+	cout << endl << endl;
+	p4.afisare();
+	cout << endl << endl;
+	p5.afisare();
+	cout << endl << endl;
+
+	cout << endl << endl << "---------------------CLASA BILET-----------------------------" << endl << endl;
+	Bilet b;
+	Bilet b1("Sinaia");
+	Bilet b2("Bucuresti", 50, 1);
+	Bilet b3("Constanta", 102.3, 0);
+	Bilet b4("Viena", 367.99, 1);
+
+	b.afisare();
+	cout << endl << endl;
+	b1.afisare();
+	cout << endl << endl;
+	b2.afisare();
+	cout << endl << endl;
+	b3.afisare();
+	cout << endl << endl;
+	b4.afisare();
+	cout << endl << endl;
+	cout << "-----------Apelare getteri--------------" << endl;
+	cout << b.getSerie() << endl;
+	cout << b.getDestinatie() << endl;
+	cout << b.getPret() << endl;
+	cout << b.getUtilizat() << endl;
+	cout << endl << endl;
+	cout << b1.getSerie() << endl;
+	cout << b1.getDestinatie() << endl;
+	cout << b1.getPret() << endl;
+	cout << b1.getUtilizat() << endl;
+	cout << endl << endl;
+	cout << b2.getSerie() << endl;
+	cout << b2.getDestinatie() << endl;
+	cout << b2.getPret() << endl;
+	cout << b2.getUtilizat() << endl;
+	cout << endl << endl;
+	cout << b3.getSerie() << endl;
+	cout << b3.getDestinatie() << endl;
+	cout << b3.getPret() << endl;
+	cout << b3.getUtilizat() << endl;
+	cout << endl << endl;
+	cout << b4.getSerie() << endl;
+	cout << b4.getDestinatie() << endl;
+	cout << b4.getPret() << endl;
+	cout << b4.getUtilizat() << endl;
+	cout << endl << endl;
+
+	cout << "-----------Apelare setteri--------------" << endl;
+
+	b3.setDestinatie("Ploiesti");
+	b3.setPret(8);
+	b3.setUtilizare(1);
+	cout << endl << endl;
+	cout << b3.getSerie() << endl;
+	cout << b3.getDestinatie() << endl;
+	cout << b3.getPret() << endl;
+	cout << b3.getUtilizat() << endl;
+	cout << endl << endl;
+	cout << "-----------Constr de copiere--------------" << endl;
+	Bilet b5 = b3;
+	cout << b5 << endl << endl;
+
+	cout << "-----------Operatorul=--------------" << endl;
+	b2 = b3;
+	cout << b2 << endl << endl;
+
+	cout << "-----------Operatorul<<--------------" << endl;
+	cout << b << endl << endl;
+	cout << b1 << endl << endl;
+	cout << b1 << endl << endl;
+	cout << b2 << endl << endl;
+	cout << b3 << endl << endl;
+	cout << b4 << endl << endl;
+	cout << b5 << endl << endl;
+
+	/*cout << "-----------Operatorul>>--------------" << endl;
+	cout << b3 << endl;
+	cin >> b3;
+	cout << b3 << endl;*/
+
+	cout << "---------------Operatorul+=--------------------" << endl << endl;
+	cout << b4 << endl << endl;
+	cout << b5 << endl << endl;
+	cout << (b5 != b4) << endl << endl;
+
+	Bilet b6 = b5 - b3;
+	cout << "Diferenta de pret dintre cele 2 bilete este: " << b6.getPret() << endl;
+
+	Bilet b7 = b3 * 2.5;
+	cout << "Pretul noului bilet este: " << b7.getPret() << endl;
+
+	Bilet::setTVA(0.25);
+	b.afisare();
+	cout << endl << endl;
+	b1.afisare();
+	cout << endl << endl;
+	b2.afisare();
+	cout << endl << endl;
+	b3.afisare();
+	cout << endl << endl;
+	b4.afisare();
+
+	cout << endl << endl << "-------------CLASA TREN---------------------" << endl << endl;
+	Tren t;
+	Tren t1("CFR");
+	int vectorCapacitate1[] = { 100,120,130 };
+	Tren t2("CFR", 3, vectorCapacitate1);
+	int vectorCapacitate2[] = { 50,60,100,70,45 };
+	Tren t3("Regio Calatori SRL", 5, vectorCapacitate2);
+	int vectorCapacitate3[] = { 80,98 };
+	Tren t4("CFR", 2, vectorCapacitate3);
+
+	cout << "-------------Apelare getteri----------------" << endl << endl;
+	cout << t.getIdTren() << endl;
+	cout << t.getCompanie() << endl;
+	cout << t.getNrVagoane() << endl;
+	for (int i = 0; i < t.getNrVagoane(); i++)
+	{
+		cout << t.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << t1.getIdTren() << endl;
+	cout << t1.getCompanie() << endl;
+	cout << t1.getNrVagoane() << endl;
+	for (int i = 0; i < t1.getNrVagoane(); i++)
+	{
+		cout << t1.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << t2.getIdTren() << endl;
+	cout << t2.getCompanie() << endl;
+	cout << t2.getNrVagoane() << endl;
+	for (int i = 0; i < t2.getNrVagoane(); i++)
+	{
+		cout << t2.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << t3.getIdTren() << endl;
+	cout << t3.getCompanie() << endl;
+	cout << t3.getNrVagoane() << endl;
+	for (int i = 0; i < t3.getNrVagoane(); i++)
+	{
+		cout << t3.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << t4.getIdTren() << endl;
+	cout << t4.getCompanie() << endl;
+	cout << t4.getNrVagoane() << endl;
+	for (int i = 0; i < t4.getNrVagoane(); i++)
+	{
+		cout << t4.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+
+	cout << "-------------Apelare setteri----------------" << endl << endl;
+	t2.setCompanie("CFR");
+	t2.setVagoane(2, vectorCapacitate3);
+	cout << t2.getIdTren() << endl;
+	cout << t2.getCompanie() << endl;
+	cout << t2.getNrVagoane() << endl;
+	for (int i = 0; i < t2.getNrVagoane(); i++)
+	{
+		cout << t2.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+
+	cout << "-------------Apelare op<<---------------" << endl << endl;
+	cout << t << endl << endl;
+	cout << t1 << endl << endl;
+	cout << t2 << endl << endl;
+	cout << t3 << endl << endl;
+	cout << t4 << endl << endl;
+
+	/*cout << "-------------Apelare op>>---------------" << endl << endl;
+	cout << t2<< endl << endl;
+	cin >> t2;
+	cout << t2 << endl << endl;*/
+
+	cout << "-------------Apelare op>=--------------" << endl << endl;
+
+	cout << (t2 >= t3) << endl << endl;
+
+	cout << "-------------Apelare op[]--------------" << endl << endl;
+
+	cout << t4[0] << endl << endl;
+	cout << "-------------Apelare op()--------------" << endl << endl;
+	cout << t3 << endl << endl;
+	t3(0, 25);
+	cout << t3 << endl << endl;
+
+	t.afisare();
+	cout << endl << endl;
+	t1.afisare();
+	cout << endl << endl;
+	t2.afisare();
+	cout << endl << endl;
+	t3.afisare();
+	cout << endl << endl;
+	t4.afisare();
+	cout << endl << endl;
+
+	cout << "-------------Apelam constr de copiere----------------" << endl << endl;
+	Tren t5 = t3;
+	cout << t5 << endl << endl;
+	cout << "----------------Apelam op=----------------" << endl << endl;
+	cout << t4 << endl << endl;
+	t4 = t2;
+	cout << t4 << endl << endl;
+
+	Tren::setNrSoferi(3);
+	t.afisare();
+	cout << endl << endl;
+	t1.afisare();
+	cout << endl << endl;
+	t2.afisare();
+	cout << endl << endl;
+	t3.afisare();
+	cout << endl << endl;
+	t4.afisare();
+	cout << endl << endl;
+
+	cout << "------------------------Clasa GARA----------------------" << endl << endl;
+	Gara g;
+	Tren vectorTrenuri1[] = { t1,t2,t3 };
+	Tren vectorTrenuri2[] = { t3,t5 };
+	Tren vectorTrenuri3[] = { t2,t4,t5,t1 };
+
+	Gara g1("Bucuresti", 3, vectorTrenuri1);
+	Gara g2("Pitesti", 2, vectorTrenuri2);
+	Gara g3("Constanta", 4, vectorTrenuri3);
+
+	g.afiseaza();
+	cout << endl << endl;
+
+	g1.afiseaza();
+	cout << endl << endl;
+
+	g2.afiseaza();
+	cout << endl << endl;
+
+	g3.afiseaza();
+	cout << endl << endl;
+
+	cout << "----------------Apelare getteri---------------" << endl << endl;
+	cout << g.getIdGara() << endl;
+	cout << g.getOras() << endl;
+	cout << g.getNrTrenuri() << endl;
+	for (int i = 0; i < g.getNrTrenuri(); i++)
+	{
+		cout << g.getTrenuri()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << g1.getIdGara() << endl;
+	cout << g1.getOras() << endl;
+	cout << g1.getNrTrenuri() << endl;
+	for (int i = 0; i < g1.getNrTrenuri(); i++)
+	{
+		cout << g1.getTrenuri()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << g2.getIdGara() << endl;
+	cout << g2.getOras() << endl;
+	cout << g2.getNrTrenuri() << endl;
+	for (int i = 0; i < g2.getNrTrenuri(); i++)
+	{
+		cout << g2.getTrenuri()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << g3.getIdGara() << endl;
+	cout << g3.getOras() << endl;
+	cout << g3.getNrTrenuri() << endl;
+	for (int i = 0; i < g3.getNrTrenuri(); i++)
+	{
+		cout << g3.getTrenuri()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << "----------------Apelare setter---------------" << endl << endl;
+	g2.setOras("Viena");
+	g2.setTrenuri(4, vectorTrenuri3);
+	cout << endl << endl;
+	cout << g2.getIdGara() << endl;
+	cout << g2.getOras() << endl;
+	cout << g2.getNrTrenuri() << endl;
+	for (int i = 0; i < g2.getNrTrenuri(); i++)
+	{
+		cout << g2.getTrenuri()[i] << endl;
+	}
+	cout << endl << endl;
+
+	cout << "----------------Apelare op<<--------------------" << endl << endl;
+	cout << g << endl << endl;
+	cout << g1 << endl << endl;
+	cout << g2 << endl << endl;
+	cout << g3 << endl << endl;
+
+	cout << "-----------------Apelare constr de copiere------------------" << endl << endl;
+	Gara g4 = g3;
+	cout << g4 << endl << endl;
+	cout << "----------------Op=---------------------" << endl << endl;
+	g2 = g3;
+	cout << g2 << endl << endl;
+	cout << "-------------------Op==-------------------" << endl << endl;
+	cout << (g4 == g3) << endl << endl;
+	cout << (g4 == g2) << endl << endl;
+
+	cout << "-------------------Op+=-------------------" << endl << endl;
+	cout << g3 << endl << endl;
+	g3 += t5;
+	cout << g3 << endl << endl;
+	cout << "-------------------Op de cast la string-------------------" << endl << endl;
+	cout << (string)g4 << endl << endl;
+
+	Gara::setNrMaxTrenuri(30);
+	g.afiseaza();
+	cout << endl << endl;
+
+	g1.afiseaza();
+	cout << endl << endl;
+
+	g2.afiseaza();
+	cout << endl << endl;
+
+	g3.afiseaza();
+	cout << endl << endl;
+
+	cout << "------------------vector pasageri--------------" << endl << endl;
+	//creare vectori de tipul claselor
+	Pasager* vectorPasageri = new Pasager[3];
+	vectorPasageri[0] = p3;
+	vectorPasageri[1] = p4;
+	vectorPasageri[2] = p2;
+	//afisare vector pasageri
+	for (int i = 0; i < 3; i++)
+	{
+		cout << vectorPasageri[i] << endl;
+	}
+	cout << "------------------vector bilete--------------" << endl << endl;
+	Bilet* vectorBilete = new Bilet[2];
+	vectorBilete[0] = b3;
+	vectorBilete[1] = b4;
+	//afisare vector pasageri
+	for (int i = 0; i < 2; i++)
+	{
+		cout << vectorBilete[i] << endl;
+	}
+	cout << "------------------vector trenuri--------------" << endl << endl;
+	Tren* vectorTrenuri = new Tren[4];
+	vectorTrenuri[0] = t2;
+	vectorTrenuri[1] = t3;
+	vectorTrenuri[2] = t3;
+	vectorTrenuri[3] = t4;
+	for (int i = 0; i < 4; i++)
+	{
+		cout << vectorTrenuri[i] << endl;
 	}
 
-	Pasager pasager5 = pasager2 + pasager3;
 
-	Tren tren4 = ++tren3;
-	cout << "Numarul de vagoane al trenului incrementat este: " << tren4.getNrVagoane() << endl;
+	Bilet* pointerBilet = new Bilet();
+	Bilet* vector = new Bilet[5];
 
-	Tren tren5 = tren2 / 2;
-	cout << "Numarul de vagoane al trenului5 este: " << tren5.getNrVagoane() << endl;
-
-	Tren tren6 = tren3--;
-	cout << "Numarul de vagoane al trenului decrementat este: " << tren6.getNrVagoane() << endl;
-
-
-	detaliiBilet(bilet2);
-	int bilet = pasager3[1];
-	cout << "Biletul de pe pozitia 1 este: " << bilet << endl;
-
-	Bilet bilet4 = bilet2 - bilet3;
-	cout << "Diferenta de pret dintre cele 2 bilete este: " << bilet4.getPret() << endl;
-
-	Bilet bilet5 = bilet3 * 2.5;
-	cout << "Pretul noului bilet este: " << bilet5.getPret() << endl;
-
-
-	Calatorie calatorie1(tren1, "Galati", 20);
-	Calatorie calatorie2(tren1, "Galati", 20);
-
-	if (calatorie1 == calatorie2) {
-		cout << "Cele două călătorii sunt identice!" << endl;
+	Bilet** pointeri = new Bilet * [5];
+	for (int i = 0; i < 5; i++) {
+		pointeri[i] = new Bilet();
 	}
 
-	Calatorie calatorie3 = calatorie1 + 5;
-	cout << "Numărul de pasageri al călătoriei 3: " << calatorie3.getNrPasageri() << endl;
+	Bilet** matrice = new Bilet * [5];
+	for (int i = 0; i < 5; i++) {
+		matrice[i] = new Bilet[5];
+	}
 
+	cout << *pointerBilet;
+	for (int i = 0; i < 5; i++) {
+		cout << vector[i] << endl << endl;
+	}
+	for (int i = 0; i < 5; i++) {
+		cout << *(pointeri[i]) << endl << endl;
+	}
+
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			cout << matrice[i][j];
+		}
+	}
+
+
+	//dezalocare
+	delete pointerBilet;
+	delete[]vector;
+
+	for (int i = 0; i < 5; i++) {
+		delete pointeri[i];
+	}
+	delete[] pointeri;
+	for (int i = 0; i < 5; i++) {
+		delete[]matrice[i];
+	}
+	delete[]matrice;
+
+	bool variabila = true;
+
+	//!variabila;
+
+	bool var2 = !variabila;
+
+	ofstream file1("PasageriFisierText.txt", ios::out);
+	file1 << p1 << endl;
+	file1 << p2 << endl;
+	file1 << p3 << endl;
+	file1 << p4 << endl;
+	file1.close();
+
+	//ifstream file2("PasageriFisierText.txt", ios::in);
+	//file2 >> p;
+	//file2.close();
+
+	fstream file3("BileteFisierBinar.bin", ios::binary | ios::out);
+	b3.scriereBinar(file3);
+	file3.close();
+
+	fstream file4("BileteFisierBinar.bin", ios::binary | ios::in);
+	b.citireBinar(file4);
+	file4.close();
+
+	fstream file5("TrenuriFisierBinar.bin", ios::binary | ios::out);
+	t3.scriereBinar(file5);
+	file5.close();
+
+	fstream file6("TrenuriFisierBinar.bin", ios::binary | ios::in);
+	t.citireBinar(file6);
+	file6.close();
+
+	ofstream file7("GaraFisierText.txt", ios::out);
+	file7 << g1 << endl;
+	file7 << g2 << endl;
+	file7 << g3 << endl;
+	file7.close();
+	ifstream file8("GaraFisierText.txt", ios::in);
+	file8 >> g;
+	file8.close();
 }
