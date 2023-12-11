@@ -10,7 +10,7 @@ using namespace std;
 class Pasager
 {
 
-	const int id; 
+	const int id;
 	string nume;
 	int varsta;
 	int nrBilete;
@@ -141,7 +141,7 @@ public:
 		return *this;
 	}
 
-	
+
 	float operator[](int poz)
 	{
 		if (poz >= 0 && poz < this->nrBilete)
@@ -163,7 +163,7 @@ public:
 		}
 	}
 
-	
+
 	Pasager& operator++()
 	{
 		this->varsta++;
@@ -176,7 +176,7 @@ public:
 		return copie;
 	}
 
-	
+
 	Pasager& operator-=(int poz)
 	{
 		Pasager copie = *this;
@@ -204,7 +204,7 @@ public:
 		return *this;
 	}
 
-	
+
 	friend ostream& operator<<(ostream& out, Pasager& p)
 	{
 		out << "Id: " << p.id << endl;
@@ -303,6 +303,7 @@ float Pasager::reducereStudent = 0.9;
 
 class Bilet
 {
+protected:
 	const int serie;
 	char* destinatie;
 	float pret;
@@ -366,7 +367,7 @@ public:
 		return *this;
 	}
 
-	
+
 	int getSerie()
 	{
 		return this->serie;
@@ -394,7 +395,7 @@ public:
 		this->destinatie = new char[strlen(destinatie) + 1];
 		strcpy(this->destinatie, destinatie);
 	}
-	
+
 	void setPret(float pret)
 	{
 		if (this->pret > 10)
@@ -437,7 +438,7 @@ public:
 		return aux;
 	}
 
-	
+
 	friend ostream& operator<<(ostream& out, Bilet& bilet)
 	{
 		out << "Serie: " << bilet.serie << endl;
@@ -446,7 +447,7 @@ public:
 		out << "Utilizat: " << bilet.utilizat << endl;
 		return out;
 	}
-	
+
 	friend istream& operator>>(istream& in, Bilet& bilet)
 	{
 		delete[]bilet.destinatie;
@@ -478,7 +479,7 @@ public:
 		return Bilet::TVA;
 	}
 
-	
+
 
 	void scriereBinar(fstream& file)
 	{
@@ -516,11 +517,79 @@ public:
 int Bilet::contor = 1;
 float Bilet::TVA = 0.19;
 
+class BiletAbonament : public Bilet
+{
+	int durataAbonament;
+	string zonaDeAcoperire;
+
+public:
+	BiletAbonament() :Bilet()
+	{
+		this->durataAbonament = 0;
+		this->zonaDeAcoperire = "necunoscut";
+	}
+	BiletAbonament(int durataAbonament, string zonaDeAcoperire, const char* destinatie, float pret, bool utilizat) :Bilet(destinatie, pret, utilizat)
+	{
+		this->durataAbonament = durataAbonament;
+		this->zonaDeAcoperire = zonaDeAcoperire;
+	}
+	~BiletAbonament()
+	{
+
+	}
+
+	int getDurata()
+	{
+		return this->durataAbonament;
+	}
+	string getZona()
+	{
+		return this->zonaDeAcoperire;
+	}
+
+	void setDurata(int durataAbonament) {
+		this->durataAbonament = durataAbonament;
+	}
+
+	void setZona(string zonaDeAcoperire) {
+		this->zonaDeAcoperire = zonaDeAcoperire;
+	}
+
+	friend ostream& operator<<(ostream& out, BiletAbonament& ba)
+	{
+		out << (Bilet&)ba << endl;
+		out << "Durata abonamentului: " << ba.durataAbonament << endl;
+		out << "Zona de acoperire a abonamentului: " << ba.zonaDeAcoperire << endl;
+	}
+
+	friend istream& operator>>(istream& in, BiletAbonament& ba)
+	{
+		in >> (Bilet&)ba;
+		cout << "Introduceti de la tastatura durata abonamentului: " << endl;
+		in >> ba.durataAbonament;
+		cout << "Introduceti de la tastatura zona de acoperire a abonamentului: " << endl;
+		in >> ba.zonaDeAcoperire;
+	}
+
+	BiletAbonament(const BiletAbonament& ba) : Bilet(ba)
+	{
+		this->durataAbonament = ba.durataAbonament;
+		this->zonaDeAcoperire = ba.zonaDeAcoperire;
+	}
+
+	BiletAbonament& operator=(const BiletAbonament& ba)
+	{
+		Bilet::operator=(ba);
+		this->durataAbonament = ba.durataAbonament;
+		this->zonaDeAcoperire = ba.zonaDeAcoperire;
+		return *this;
+	}
+};
 
 
-
-class Tren {
-
+class Tren
+{
+protected:
 	const int idTren;
 	string companie;
 	int nrVagoane;
@@ -652,7 +721,7 @@ public:
 		}
 	}
 
-	
+
 	friend ostream& operator<<(ostream& out, Tren& t)
 	{
 		out << "Id tren: " << t.idTren << endl;
@@ -665,7 +734,7 @@ public:
 		}
 		return out;
 	}
-	
+
 	friend istream& operator>>(istream& in, Tren& t)
 	{
 		delete[]t.capacitate;
@@ -713,7 +782,7 @@ public:
 		}
 	}
 
-	
+
 	void citireBinar(fstream& file)
 	{
 		if (this->capacitate != NULL) {
@@ -736,6 +805,80 @@ public:
 int Tren::contor = 376338;
 int Tren::nrSoferi = 2;
 
+
+class TrenMarfa :public Tren
+{
+	float capacitateMaxMarfa;
+	string tipMarfa;
+public:
+	//constr fara parametrii
+	TrenMarfa() :Tren()
+	{
+		this->capacitateMaxMarfa = 0;
+		this->tipMarfa = "tip";
+	}
+	//constr cu toti parametrii
+	TrenMarfa(float capacitateMaxMarfa, string tipMarfa, string companie, int nrVagoane, int* capacitate) :Tren(companie, nrVagoane, capacitate)
+	{
+		this->capacitateMaxMarfa = capacitateMaxMarfa;
+		this->tipMarfa = tipMarfa;
+	}
+	//destructor
+	~TrenMarfa()
+	{
+
+	}
+	//getteri
+	float getCapacitateMaxMarfa()
+	{
+		return this->capacitateMaxMarfa;
+	}
+	string getTipMarfa()
+	{
+		return this->tipMarfa;
+	}
+	//setteri
+	void setCapacitateMaxMarfa(float capacitateMaxMarfa)
+	{
+		this->capacitateMaxMarfa = capacitateMaxMarfa;
+	}
+	void setTipMarfa(string tipMarfa)
+	{
+		this->tipMarfa = tipMarfa;
+	}
+	//op<<
+	friend ostream& operator<<(ostream& out, TrenMarfa& te)
+	{
+		out << (Tren&)te << endl;
+		out << "Capacitate maxima marfa: " << te.capacitateMaxMarfa << endl;
+		out << "Tip marfa: " << te.tipMarfa << endl;
+		return out;
+	}
+	//constr de copiere
+	TrenMarfa(const TrenMarfa& te) :Tren(te)
+	{
+		this->capacitateMaxMarfa = te.capacitateMaxMarfa;
+		this->tipMarfa = te.tipMarfa;
+	}
+	//op=
+	TrenMarfa& operator=(const TrenMarfa& te)
+	{
+		Tren::operator=(te);
+		this->capacitateMaxMarfa = te.capacitateMaxMarfa;
+		this->tipMarfa = te.tipMarfa;
+		return *this;
+	}
+	//op>>
+	friend istream& operator>>(istream& in, TrenMarfa& te)
+	{
+		in >> (Tren&)te;
+		cout << "Introduceti de la tastatura capacitatea maxima de marfa: " << endl;
+		in >> te.capacitateMaxMarfa;
+		cout << "Introduceti de la tastatura tipul de marfa: " << endl;
+		in >> te.tipMarfa;
+		return in;
+	}
+};
 class Gara
 {
 	const int idGara;
@@ -782,7 +925,7 @@ public:
 			this->trenuri[i] = g.trenuri[i];
 		}
 	}
-	
+
 	Gara& operator=(const Gara& g)
 	{
 		if (this->trenuri != NULL)
@@ -798,7 +941,7 @@ public:
 		}
 		return *this;
 	}
-	
+
 	const int getIdGara()
 	{
 		return this->idGara;
@@ -833,7 +976,7 @@ public:
 			this->trenuri[i] = trenuri[i];
 		}
 	}
-	
+
 	friend ostream& operator<<(ostream& out, Gara& g)
 	{
 		out << "Id gara: " << g.idGara << endl;
@@ -1531,4 +1674,162 @@ void main()
 	ifstream file8("GaraFisierText.txt", ios::in);
 	file8 >> g;
 	file8.close();
+
+	cout << "----------------------Clasa Tren Marfa-------------------------" << endl << endl;
+	TrenMarfa te;
+
+
+	TrenMarfa te2(2678.9, "piese auto", "DOLO TRANS SRL", 5, vectorCapacitate2);
+	TrenMarfa te3(8765.4, "materiale constructii", "International Lazar Company", 3, vectorCapacitate1);
+
+	//constr de copiere
+	TrenMarfa te4 = te3;
+	//op=
+	te2 = te3;
+
+	cout << "---------Apelare getteri--------------" << endl << endl;
+	cout << te.getCapacitateMaxMarfa() << endl;
+	cout << te.getTipMarfa() << endl;
+	cout << te.getIdTren() << endl;
+	cout << te.getCompanie() << endl;
+	cout << te.getNrVagoane() << endl;
+	for (int i = 0; i < te.getNrVagoane(); i++)
+	{
+		cout << te.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+
+	cout << te2.getCapacitateMaxMarfa() << endl;
+	cout << te2.getTipMarfa() << endl;
+	cout << te2.getIdTren() << endl;
+	cout << te2.getCompanie() << endl;
+	cout << te2.getNrVagoane() << endl;
+	for (int i = 0; i < te2.getNrVagoane(); i++)
+	{
+		cout << te2.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << te3.getCapacitateMaxMarfa() << endl;
+	cout << te3.getTipMarfa() << endl;
+	cout << te3.getIdTren() << endl;
+	cout << te3.getCompanie() << endl;
+	cout << te3.getNrVagoane() << endl;
+	for (int i = 0; i < te3.getNrVagoane(); i++)
+	{
+		cout << te3.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+	cout << te4.getCapacitateMaxMarfa() << endl;
+	cout << te4.getTipMarfa() << endl;
+	cout << te4.getIdTren() << endl;
+	cout << te4.getCompanie() << endl;
+	cout << te4.getNrVagoane() << endl;
+	for (int i = 0; i < te4.getNrVagoane(); i++)
+	{
+		cout << te4.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+
+
+	cout << "----------------------Apelare setteri-----------------" << endl << endl;
+	te2.setCapacitateMaxMarfa(5678.99);
+	te2.setTipMarfa("mobila");
+	te2.setCompanie("LAZAR SRL");
+	te2.setVagoane(3, vectorCapacitate1);
+	cout << te2.getCapacitateMaxMarfa() << endl;
+	cout << te2.getTipMarfa() << endl;
+	cout << te2.getIdTren() << endl;
+	cout << te2.getCompanie() << endl;
+	cout << te2.getNrVagoane() << endl;
+	for (int i = 0; i < te2.getNrVagoane(); i++)
+	{
+		cout << te2.getCapacitate()[i] << endl;
+	}
+	cout << endl << endl;
+
+	cout << "----------------------Apelare operatorul<<-----------------" << endl << endl;
+	cout << te << endl << endl;
+	cout << te2 << endl << endl;
+	cout << te3 << endl << endl;
+	cout << te4 << endl << endl;
+
+	/*cout << "----------------------Apelare operatorul>>-----------------" << endl << endl;
+	cout << te2 << endl << endl;
+	cin >> te2;
+	cout << te2 << endl << endl;*/
+
+	cout << "-------------Apelare op>=--------------" << endl << endl;
+
+	cout << (te2 >= te3) << endl << endl;
+
+	cout << "-------------Apelare op[]--------------" << endl << endl;
+
+	cout << te4[0] << endl << endl;
+	cout << "-------------Apelare op()--------------" << endl << endl;
+	cout << te3 << endl << endl;
+	te3(0, 25);
+	cout << te3 << endl << endl;
+
+	//upcasting
+	Tren t7 = te2;
+	cout << te2 << endl << endl;
+	cout << t7 << endl << endl;
+
+
+	cout << "-------------Clasa Bilet Abonament--------------" << endl << endl;
+	BiletAbonament ba;
+	BiletAbonament ba1(5, "Bucuresti-Galati", "Galati", 10.5, 0);
+	BiletAbonament ba2(10, "Ploiesti-Bucuresti", "Buftea", 12, 1);
+
+	BiletAbonament ba3 = ba1;
+	ba1 = ba2;
+
+	cout << ba.getDurata() << endl;
+	cout << ba.getZona() << endl;
+	cout << ba.getDestinatie() << endl;
+	cout << ba.getPret() << endl;
+	cout << ba.getUtilizat() << endl;
+
+	cout << ba1.getDurata() << endl;
+	cout << ba1.getZona() << endl;
+	cout << ba1.getDestinatie() << endl;
+	cout << ba1.getPret() << endl;
+	cout << ba1.getUtilizat() << endl;
+
+	cout << ba2.getDurata() << endl;
+	cout << ba2.getZona() << endl;
+	cout << ba2.getDestinatie() << endl;
+	cout << ba2.getPret() << endl;
+	cout << ba2.getUtilizat() << endl;
+
+	ba2.setDurata(15);
+	ba2.setZona("Pitesti-Bucuresti");
+	ba2.setDestinatie("Ploiesti");
+	ba2.setPret(2);
+	ba2.setUtilizare(0);
+
+	cout << ba2.getDurata() << endl;
+	cout << ba2.getZona() << endl;
+	cout << ba2.getDestinatie() << endl;
+	cout << ba2.getPret() << endl;
+	cout << ba2.getUtilizat() << endl;
+
+
+	cout << endl << endl;
+
+	cout << ba << endl << endl;
+	cout << ba1 << endl << endl;
+	cout << ba2 << endl << endl;
+
+	cout << ba2 << endl << endl;
+	cin >> ba2;
+	cout << ba2 << endl << endl;
+
+	cout << (ba1 != ba) << endl << endl;
+
+
+	Bilet b2 = ba2;
+	cout << b2 << endl;
+	cout << ba2 < endl;
+
 }
