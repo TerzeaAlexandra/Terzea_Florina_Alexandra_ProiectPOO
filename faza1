@@ -1830,6 +1830,6 @@ void main()
 
 	Bilet b2 = ba2;
 	cout << b2 << endl;
-	cout << ba2 < endl;
+	cout << ba2 << endl;
 
 }
